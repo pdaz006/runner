@@ -1,6 +1,8 @@
 name: ScriptRunner
 
 on:
+  push:
+    branches: [ "master" ]
   schedule:
     - cron: "*/15 * * * *"  
 permissions:
