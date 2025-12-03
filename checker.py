@@ -4,6 +4,7 @@ import logging
 import os
 import random
 import time
+from uuid import uuid4
 
 import git
 import httpx
@@ -31,6 +32,7 @@ REPO_LIST = [repo.split('|') for repo in os.environ.get('REPO_LIST', '').split('
 
 def main():
     logger.info('检查github actions')
+    nochange = 0
     for name, repo in REPO_LIST:
         url = f'https://api.github.com/repos/{repo}/actions/runs?per_page=1"'
         headers = {'Authorization': f'token {GITHUB_TOKEN}', 'Accept': 'application/vnd.github.v3+json'}
@@ -48,6 +50,16 @@ def main():
                 rd_time = random.randint(60, 180)
                 logger.info(f'仓库 {repo} 冷却时间 {rd_time} 秒')
                 time.sleep(rd_time)
+                if nochange == 0:
+                    # 修改1.txt
+                    uid = str(uuid4()).upper()
+                    with open('1.txt', 'w') as f:
+                        f.write(uid)
+                    git.Repo('.').index.add('1.txt')
+                    git.Repo('.').commit(uid)
+                    logger.info(f'仓库 {repo} 提交 {uid}')
+                    nochange = 1
+                # 推送
                 git.Repo('.').remote(name).push(force=True)
     logger.info('检查完成')
 
