@@ -44,10 +44,16 @@ async def get_key_len(rk):
 
 def main():
     worker_tasks_nums = 50
-    rk = 'insurance:tasks:company_tasks_action'
-    length = asyncio.run(get_key_len(rk))
-    logger.info(f'队列{rk}长度为{length}')
-    logger.info('检查github actions')
+    for task_k in ['01', '02', '03']:
+        rk = f'insurance:tasks:company_tasks_action:{task_k}'
+        length = asyncio.run(get_key_len(rk))
+        logger.info(f'队列{rk}长度为{length}')
+        logger.info('检查github actions')
+        if length == 0:
+            logger.info('队列为空, 退出')
+            continue
+        else:
+            return length
     if length == 0:
         logger.info('队列为空, 退出')
         return
