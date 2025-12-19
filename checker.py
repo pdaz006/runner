@@ -44,6 +44,7 @@ async def get_key_len(rk):
 
 def main():
     worker_tasks_nums = 50
+    length = 0
     for task_k in ['01', '02', '03']:
         rk = f'insurance:tasks:company_tasks_action:{task_k}'
         length = asyncio.run(get_key_len(rk))
@@ -53,7 +54,7 @@ def main():
             logger.info('队列为空, 退出')
             continue
         else:
-            return length
+            break
     if length == 0:
         logger.info('队列为空, 退出')
         return
